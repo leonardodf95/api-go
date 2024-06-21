@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/leonardodf95/api-go/internal/events/domain"
 	"github.com/leonardodf95/api-go/internal/events/usecase"
 )
 
@@ -93,14 +94,23 @@ func (h *EventsHandler) GetEvent(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} string
 // @Router /checkout [post]
 func (h *EventsHandler) ReserveSpots(w http.ResponseWriter, r *http.Request) {
+	eventID, err := strconv.Atoi(r.PathValue("eventID"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	var input usecase.ReserveSpotInputDTO
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
+	input.EventID = eventID
 	output, err := h.reserveSpotUseCase.Execute(input)
 	if err != nil {
+		if err.Error() == domain.ErrSpotAlreadyReserved.Error() {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

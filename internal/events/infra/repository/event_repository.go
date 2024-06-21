@@ -70,11 +70,11 @@ func (r *EventRepository) FindSpotsByEventID(eventID int) ([]domain.Spot, error)
 
 func (r *EventRepository) ReserveSpot(eventID int, name string) (*domain.Spot, error) {
 
-	for _, spot := range r.spots {
+	for i, spot := range r.spots {
 		if spot.Name == name && spot.EventID == eventID {
 			if spot.Status == domain.SpotStatusAvailable {
-				spot.Status = domain.SpotStatusReserved
-				return &spot, nil
+				r.spots[i].Status = domain.SpotStatusReserved
+				return &r.spots[i], nil
 			} else {
 				return nil, domain.ErrSpotAlreadyReserved
 			}

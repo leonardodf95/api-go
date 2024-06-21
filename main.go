@@ -47,7 +47,7 @@ func main() {
 	r.HandleFunc("/events", eventsHandler.ListEvents)
 	r.HandleFunc("/events/{eventID}", eventsHandler.GetEvent)
 	r.HandleFunc("/events/{eventID}/spots", eventsHandler.ListSpots)
-	r.HandleFunc("POST /events/{eventId}/reserve", eventsHandler.ReserveSpots)
+	r.HandleFunc("POST /events/{eventID}/reserve", eventsHandler.ReserveSpots)
 
 	server := &http.Server{
 		Addr:    ":8080",
